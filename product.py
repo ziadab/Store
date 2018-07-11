@@ -23,19 +23,22 @@ class Product():
 		self.c.execute("CREATE TABLE IF NOT EXISTS sell(product TEXT, main_price REAL, sell_price REAL, win REAL, count INTEGER)")
 		self.product = product
 		self.finalPrice = finalPrice
+		self.execute("SELECT main_price FROM product WHERE product=?",(self.product))
+		self.main_price = float(self.fetchone()[0])
 		self.c.execute("SELECT product, sell_price FROM sell")
 		for x in self.c.fetchall():
 			if x[0] and x[1] == self.product, self.finalPrice:
-				self.c.execute("SELECT count FROM sell WHERE product=? AND sell_price=?",(self.product, self.finalPrice))
+				self.c.execute("SELECT count FROM sell WHERE product=? AND main_price=? AND sell_price=?",(self.product, self.main_price, self.finalPrice))
 				if self.c.fetchone() == None:
 					self.count = 1
 				else:
 					self.count +=1
 				self.c.execute("UPDATE sell SET count=? WHERE product=? AND sell_price=?",(self.count, self.product, self.finalPrice))
+				self.conn.commit()
 			else:
+				self.win = self.finalPrice - self.main_price
 				self.count = 1
-
-
+				self.c.execute("INSERT INTO sell VALUES(?, ?, ?, ?, ?)",(self.product, self.main_price, self.finalPrice, self.win, self.count ))
 
 	def mainPrice(self,product):
 		self.product = product
