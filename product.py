@@ -8,31 +8,49 @@ class Product():
 		self.c.execute("CREATE TABLE IF NOT EXISTS product(product TEXT, main_price REAL, sell_price REAL)")
 
 	def addProduct(self,product,main_price,sell_price=None):
-		self.product = product
+		self.product = product.title()
 		self.main_price = main_price
 		self.sell_price = sell_price
 		self.c.execute("INSERT INTO product VALUES(?, ?, ?)",(self.product, self.main_price, self.sell_price))
 		self.conn.commit()
 
 	def delete_product(self,product):
-		self.product = product
+		self.product = product.title()
 		self.c.execute("DELETE FROM product WHERE product=?",(self.product,))
 		self.conn.commit()
 
 	def sell(self,product,finalPrice):
-		self.c.execute("CREATE TABLE IF NOT EXISTS sell(product TEXT, main_price REAL, sell_price REAL, win REAL, count INTEGER)")
-		self.product = product
-		self.sell_price =finalPrice
+		self.c.execute("CREATE TABLE IF NOT EXISTS sell(id integer primary key AUTOINCREMENT, product TEXT, main_price REAL, sell_price REAL, win REAL, count INTEGER)")
+		self.product = product.title()
+		self.sell_price =float(finalPrice)
 		self.c.execute("SELECT main_price FROM product WHERE product=?",(self.product,))
 		self.main_price = self.c.fetchone()[0]
 		self.win = self.sell_price - self.main_price
 		################################ Hir The Break ################################
-		self.c.execute("SELECT count FROM sell WHERE product=?",(self.product,))
-		print(self.c.fetchone())
+		data = self.c.execute("SELECT * FROM sell").fetchall()
+		if len(data) == 0:
+			self.count = 1
+			self.c.execute("INSERT INTO sell VALUES(null,?,?,?,?,?)",(self.product, self.main_price, self.sell_price, self.win, self.count))
+			self.conn.commit()
+			print("Hhhhh")
+		else:
+			print("ELSE")
+			self.c.execute("SELECT * FROM sell")
+			for rows in self.c.fetchall():
+				if rows[1] ==str(self.product) and rows[3] == self.sell_price:
+					self.count = rows[-1] + 1
+					self.c.execute("""UPDATE sell SET count = ? WHERE id = ?""",(self.count, rows[0]))
+					self.conn.commit()
+					print("Updated...")
+				else:
+					self.count = 1
+					self.c.execute("INSERT INTO sell VALUES(null,?,?,?,?,?)",(self.product, self.main_price, self.sell_price, self.win, self.count))
+					self.conn.commit()
+					print("New One..")
 
 
 	def mainPrice(self,product):
-		self.product = product
+		self.product = product.title()
 		self.c.execute("SELECT main_price FROM product WHERE product=?",(self.product,))
 		for i in self.c.fetchall():
 			print(str(self.product)+" : "+str(i[0]))

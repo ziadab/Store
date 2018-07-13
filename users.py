@@ -51,12 +51,14 @@ class Admin(User):
 		self.password = hashlib.md5(str(password).encode("utf-8")).hexdigest()
 		self.permition = permition
 		self.c.execute("INSERT INTO users VALUES (?, ?, ?)",(self.username, self.password, self.permition))
+		self.conn.commit()
 
 	def deleteUser(self,username,password,permition=0):
 		self.username = username
 		self.password = hashlib.md5(str(password).encode("utf-8")).hexdigest()
 		self.permition = permition
 		self.execute("DELETE FROM users WHERE username=? AND password=? AND permition=?",self.username, self.password, self.permition)
+		self.conn.commit()
 		
 
 	
