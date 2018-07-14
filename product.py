@@ -23,30 +23,29 @@ class Product():
 		self.c.execute("CREATE TABLE IF NOT EXISTS sell(id integer primary key AUTOINCREMENT, product TEXT, main_price REAL, sell_price REAL, win REAL, count INTEGER)")
 		self.product = product.title()
 		self.sell_price =float(finalPrice)
-		self.c.execute("SELECT main_price FROM product WHERE product=?",(self.product,))
-		self.main_price = self.c.fetchone()[0]
-		self.win = self.sell_price - self.main_price
-		################################ Hir The Break ################################
+		try:
+			dt = self.c.execute("SELECT main_price FROM product WHERE product=?",(self.product,)).fetchall()
+			self.main_price = dt[0][0]
+			self.win = self.sell_price - self.main_price
+		except:
+			print("Something Go Wrong")
+		############################### Hir The Break ################################
 		data = self.c.execute("SELECT * FROM sell").fetchall()
 		if len(data) == 0:
 			self.count = 1
 			self.c.execute("INSERT INTO sell VALUES(null,?,?,?,?,?)",(self.product, self.main_price, self.sell_price, self.win, self.count))
 			self.conn.commit()
-			print("Hhhhh")
 		else:
-			print("ELSE")
 			self.c.execute("SELECT * FROM sell")
 			for rows in self.c.fetchall():
 				if rows[1] ==str(self.product) and rows[3] == self.sell_price:
 					self.count = rows[-1] + 1
 					self.c.execute("""UPDATE sell SET count = ? WHERE id = ?""",(self.count, rows[0]))
 					self.conn.commit()
-					print("Updated...")
 				else:
 					self.count = 1
 					self.c.execute("INSERT INTO sell VALUES(null,?,?,?,?,?)",(self.product, self.main_price, self.sell_price, self.win, self.count))
 					self.conn.commit()
-					print("New One..")
 
 
 	def mainPrice(self,product):
