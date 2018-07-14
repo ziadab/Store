@@ -5,13 +5,13 @@ class Product():
 	c = conn.cursor()
 
 	def __init__(self):
-		self.c.execute("CREATE TABLE IF NOT EXISTS product(product TEXT, main_price REAL, sell_price REAL)")
+		self.c.execute("CREATE TABLE IF NOT EXISTS product(id integer primary key AUTOINCREMENT, product TEXT, main_price REAL, sell_price REAL)")
 
 	def addProduct(self,product,main_price,sell_price=None):
 		self.product = product.title()
 		self.main_price = main_price
 		self.sell_price = sell_price
-		self.c.execute("INSERT INTO product VALUES(?, ?, ?)",(self.product, self.main_price, self.sell_price))
+		self.c.execute("INSERT INTO product VALUES(null,?, ?, ?)",(self.product, self.main_price, self.sell_price))
 		self.conn.commit()
 
 	def delete_product(self,product):
