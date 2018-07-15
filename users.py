@@ -25,18 +25,6 @@ class User():
 		for i in data:
 			print(i)
 
-	#def sell(self,iD,product,price): 
-	#	self.product = product
-	#	self.price = price
-	#	self.id = iD 
-	#	self.c.execute('CREATE TABLE IF NOT EXISTS sell(product TEXT, main_price REAL, sell_price REAL, win REAL)')
-	#	self.c.execute("SELECT main_price FROM products(rowid, product, main_price, sell_price) WHERE rowid = VALUES(?)",(self.id))
-	#	self.sell_price = c.fetchone()
-	#	self.win = (self.price - self.sell_price)
-	#	self.c.execute("INSERT INTO sell VALUES(?, ? ,? ,?)",(self.product, self.sell_price, self.price, self.win ))#DONT MISS ME HIR
-	#	self.conn.commit()
-		
-
 
 
 class Admin(User):
